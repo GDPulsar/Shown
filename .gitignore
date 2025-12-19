@@ -1,0 +1,14 @@
+/common/src/main/java/com/pulsar/shown/screen/SplitScreen.java
+/common/src/main/java/com/pulsar/shown/screen/TabbedScreen.java
+/common/src/main/java/com/pulsar/shown/screen/TestScreen.java
+/.gradle/
+/build/
+/.idea/
+/common/.gradle/
+/fabric/run/
+/neoforge/run/
+/neoforge/.gradle/
+/fabric/.gradle/
+/neoforge/build/
+/fabric/build/
+/common/build/
