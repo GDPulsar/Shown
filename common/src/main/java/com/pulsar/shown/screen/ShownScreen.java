@@ -73,8 +73,6 @@ public abstract class ShownScreen extends Screen {
         float tickDelta = tick - Mth.floor(tick);
         lastNanos = System.nanoTime();
 
-        Shown.LOGGER.info("tickdelta: {}", tickDelta);
-
         List<Triple<WidgetBase, Integer, List<WidgetBase>>> widgets = new ArrayList<>();
         addChildWidgets(this.root, 0, new ArrayList<>(), widgets);
 
