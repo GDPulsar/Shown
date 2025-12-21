@@ -1,5 +1,8 @@
 plugins {
     id 'com.github.johnrengelman.shadow'
+    id "com.modrinth.minotaur" version "2.+"
+    id 'java-library'
+    id 'maven-publish'
 }
 
 architectury {
@@ -24,12 +27,30 @@ configurations {
     }
 }
 
+modrinth {
+    token = findProperty("modrinth.token")
+    projectId = "shown"
+    versionNumber = project.version
+    versionType = "alpha"
+    versionName = "Shown Fabric $mod_version"
+
+    uploadFile = project(":fabric").tasks.remapJar
+
+    gameVersions = ["1.21.1"]
+    loaders = ["fabric"]
+
+    dependencies {
+        required.project "architectury-api"
+        required.project "fabric-api"
+    }
+}
+
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
+    //modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
 
-    modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
+    //modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
@@ -50,4 +71,47 @@ shadowJar {
 
 remapJar {
     input.set shadowJar.archiveFile
+}
+
+publishing {
+    publications {
+        mavenCommon(MavenPublication) {
+            from components.java
+
+            artifactId = "shown-fabric"
+
+            pom {
+                name = "Shown! Fabric"
+                description = "Fabric Architectury package for Shown!"
+                url = "https://github.com/GDPulsar/Classy"
+
+                developers {
+                    developer {
+                        id = "gdpulsar"
+                        name = "Pulsar"
+                    }
+                }
+
+                scm {
+                    connection = "scm:git:git://github.com/GDPulsar/Shown.git"
+                    developerConnection = "scm:git:ssh://github.com:GDPulsar/Shown.git"
+                    url = "https://github.com/GDPulsar/Shown"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/GDPulsar/Librarby")
+            credentials {
+                username = findProperty("gpr.user")
+                password = findProperty("gpr.token")
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
 }
