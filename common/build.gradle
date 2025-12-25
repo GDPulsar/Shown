@@ -21,12 +21,12 @@ publishing {
         mavenCommon(MavenPublication) {
             from components.java
 
-            artifactId = "classy-common"
+            artifactId = "shown-common"
 
             pom {
-                name = "Classy! Common"
-                description = "Common Architectury package for Classy!"
-                url = "https://github.com/GDPulsar/Classy"
+                name = "Shown! Common"
+                description = "Common Architectury package for Shown!"
+                url = "https://github.com/GDPulsar/Shown"
 
                 developers {
                     developer {

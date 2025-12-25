@@ -171,8 +171,7 @@ public class WidgetBase {
 
     public UIArea getRenderArea(float tickDelta) {
         if (shouldLerp && this.lastArea != null) {
-            UIArea lerped = this.lastArea.lerp(this.uiArea, tickDelta);
-            return lerped;
+            return this.lastArea.lerp(this.uiArea, tickDelta);
         }
         return this.uiArea;
     }
