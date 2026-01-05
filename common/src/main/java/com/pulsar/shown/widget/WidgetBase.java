@@ -42,12 +42,15 @@ public class WidgetBase {
         this.size = size;
     }
 
-    public <T extends WidgetBase> T setPosition(UIVec position) {
+    public <T extends WidgetBase> T setPosition(UIVec position, boolean silent) {
         this.position = position;
-        if (this.initialized) {
+        if (this.initialized && !silent) {
             this.updateArea();
         }
         return (T)this;
+    }
+    public <T extends WidgetBase> T setPosition(UIVec position) {
+        return this.setPosition(position, false);
     }
     public UIVec getPosition() {
         return this.position;
@@ -61,12 +64,15 @@ public class WidgetBase {
         return this.rotation;
     }
 
-    public <T extends WidgetBase> T setSize(UIVec size) {
+    public <T extends WidgetBase> T setSize(UIVec size, boolean silent) {
         this.size = size;
-        if (this.initialized) {
+        if (this.initialized && !silent) {
             this.updateArea();
         }
         return (T)this;
+    }
+    public <T extends WidgetBase> T setSize(UIVec size) {
+        return this.setSize(size, false);
     }
     public UIVec getSize() {
         return this.size;
