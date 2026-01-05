@@ -21,6 +21,7 @@ public class VerticalLayout extends WidgetLayout {
         if (this.getParent() == null) return;
         UIArea area = this.getParent().getArea();
         List<WidgetBase> children = this.parent.getChildren();
+        if (children.isEmpty()) return;
         double totalHeight = 0;
         for (int i = 0; i < children.size(); i++) {
             WidgetBase child = children.get(i);
