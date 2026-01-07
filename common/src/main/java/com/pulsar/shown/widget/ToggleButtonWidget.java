@@ -38,7 +38,7 @@ public class ToggleButtonWidget extends ButtonWidget {
         if (this.getHoverColor() != -1 && this.contains(mouseX, mouseY)) drawColor = this.getHoverColor();
         if (borderThickness > 0) {
             guiGraphics.fill(aX, aY, bX, bY, borderColor);
-            guiGraphics.fill(aX + borderThickness, aY + borderThickness, bX - borderThickness, bY - borderThickness, drawColor);
+            guiGraphics.fill(aX + borderThickness, aY + borderThickness, bX - borderThickness, bY - borderThickness, this.getRenderDepth(), drawColor);
         } else {
             guiGraphics.fill(aX, aY, bX, bY, drawColor);
         }

@@ -1,6 +1,5 @@
 package com.pulsar.shown.screen;
 
-import com.pulsar.shown.Shown;
 import com.pulsar.shown.UIArea;
 import com.pulsar.shown.UIVec;
 import com.pulsar.shown.widget.WidgetBase;

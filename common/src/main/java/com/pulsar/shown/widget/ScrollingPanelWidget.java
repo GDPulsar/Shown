@@ -4,10 +4,16 @@ import com.pulsar.shown.Enums;
 import com.pulsar.shown.UIArea;
 import com.pulsar.shown.UIVec;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.Mth;
+import org.joml.Vector2i;
 
 public class ScrollingPanelWidget extends PanelWidget {
     private double scrollX = 0;
     private double scrollY = 0;
+
+    private UIArea scrollLimits = null;
+    private Vector2i scrollPadding = null;
+    private boolean autoScrollLimits = false;
 
     private boolean allowDragging = false;
     private boolean allowMouseWheel = true;
@@ -57,6 +63,48 @@ public class ScrollingPanelWidget extends PanelWidget {
         return this.dragButton;
     }
 
+    public <T extends ScrollingPanelWidget> T setScrollLimits(UIArea scrollLimits) {
+        this.scrollLimits = scrollLimits;
+        this.autoScrollLimits = false;
+        return (T)this;
+    }
+    public <T extends ScrollingPanelWidget> T setScrollLimits(int paddingX, int paddingY) {
+        this.scrollPadding = new Vector2i(paddingX, paddingY);
+        this.autoScrollLimits = true;
+        return (T)this;
+    }
+
+    public UIArea getScrollLimits() {
+        return this.scrollLimits;
+    }
+
+    @Override
+    public void onInit() {
+        super.onInit();
+    }
+
+    @Override
+    public void updateArea(UIArea parentArea) {
+        super.updateArea(parentArea);
+        this.recalculateScrollLimits();
+    }
+
+    private void recalculateScrollLimits() {
+        if (!this.autoScrollLimits) return;
+        UIArea area = this.getArea();
+        int minX = 0;
+        int minY = 0;
+        int maxX = 0;
+        int maxY = 0;
+        for (WidgetBase child : this.getChildren()) {
+            minX = Math.min(minX, child.getArea().x);
+            minY = Math.min(minY, child.getArea().y);
+            maxX = Math.max(maxX, child.getArea().x + child.getArea().width - area.width);
+            maxY = Math.max(maxY, child.getArea().y + child.getArea().height - area.height);
+        }
+        this.scrollLimits = new UIArea(minX, minY, maxX - minX, maxY - minY);
+    }
+
     private boolean startedDrag = false;
 
     @Override
@@ -83,6 +131,11 @@ public class ScrollingPanelWidget extends PanelWidget {
         if (allowDragging && startedDrag && button == dragButton.button()) {
             this.scrollX += dx;
             this.scrollY += dy;
+            recalculateScrollLimits();
+            if (this.scrollLimits != null) {
+                this.scrollX = Mth.clamp(this.scrollX, this.scrollLimits.x, this.scrollLimits.x + this.scrollLimits.width);
+                this.scrollY = Mth.clamp(this.scrollY, this.scrollLimits.y, this.scrollLimits.y + this.scrollLimits.height);
+            }
             return true;
         }
         return false;
@@ -93,6 +146,11 @@ public class ScrollingPanelWidget extends PanelWidget {
         if (allowMouseWheel) {
             this.scrollX += scrollX * scrollSensitivity;
             this.scrollY += scrollY * scrollSensitivity;
+            recalculateScrollLimits();
+            if (this.scrollLimits != null) {
+                this.scrollX = Mth.clamp(this.scrollX, this.scrollLimits.x, this.scrollLimits.x + this.scrollLimits.width);
+                this.scrollY = Mth.clamp(this.scrollY, this.scrollLimits.y, this.scrollLimits.y + this.scrollLimits.height);
+            }
             return true;
         }
         return false;

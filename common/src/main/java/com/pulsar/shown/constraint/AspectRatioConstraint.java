@@ -24,6 +24,9 @@ public class AspectRatioConstraint extends WidgetConstraint {
             targetWidth = area.width;
             targetHeight = (int)(targetWidth / ratio);
         }
-        this.getParent().setSize(new UIVec(0, 0, targetWidth, targetHeight), true);
+        if (this.getParent().getSize().offsetX == targetWidth && this.getParent().getSize().offsetY == targetHeight) {
+            return;
+        }
+        this.getParent().setSize(new UIVec(0, 0, targetWidth, targetHeight));
     }
 }

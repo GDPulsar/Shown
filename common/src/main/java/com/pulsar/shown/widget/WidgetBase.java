@@ -280,6 +280,15 @@ public class WidgetBase {
         return false;
     }
 
+    private int getDepth(WidgetBase current, int depth) {
+        if (current.getParent() == null) return depth;
+        return getDepth(current.getParent(), depth + 1);
+    }
+
+    int getRenderDepth() {
+        return getZIndex() * 10000 + getDepth(this, 0) + this.getParent().getChildren().indexOf(this);
+    }
+
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
         if (!isVisible()) return;
         renderBackground(guiGraphics, mouseX, mouseY, tickDelta);

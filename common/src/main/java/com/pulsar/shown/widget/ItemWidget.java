@@ -30,7 +30,7 @@ public class ItemWidget extends WidgetBase {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(drawArea.x, drawArea.y, 0);
         guiGraphics.pose().scale(drawArea.width / 18f, drawArea.height / 18f, 1f);
-        guiGraphics.renderItem(this.item, 0, 0);
+        guiGraphics.renderItem(this.item, 0, 0, this.getRenderDepth());
         guiGraphics.pose().popPose();
         if (this.contains(mouseX, mouseY)) {
             guiGraphics.renderTooltip(Minecraft.getInstance().font, this.item, mouseX, mouseY);

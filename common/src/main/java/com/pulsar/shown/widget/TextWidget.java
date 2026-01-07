@@ -6,13 +6,14 @@ import com.pulsar.shown.UIVec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class TextWidget extends WidgetBase {
-    private Component text = Component.empty();
+    private MutableComponent text = Component.empty();
     private double fontSize = 9;
     private Enums.Alignment alignment = Enums.Alignment.TOP_LEFT;
 
@@ -20,12 +21,12 @@ public class TextWidget extends WidgetBase {
         super(position, size);
     }
 
-    public <T extends TextWidget> T setText(@NotNull Component text) {
+    public <T extends TextWidget> T setText(@NotNull MutableComponent text) {
         this.text = text;
         return (T)this;
     }
 
-    public Component getText() {
+    public MutableComponent getText() {
         return this.text;
     }
 
@@ -63,15 +64,15 @@ public class TextWidget extends WidgetBase {
             int lineWidth = Minecraft.getInstance().font.width(line);
             switch (alignment.getXAlignment()) {
                 case LEFT -> {
-                    guiGraphics.pose().translate(drawArea.x, drawArea.y + yOff, 0);
+                    guiGraphics.pose().translate(drawArea.x, drawArea.y + yOff, this.getRenderDepth());
                     guiGraphics.pose().scale((float)fontSize / 9f, (float)fontSize / 9f, 1f);
                 }
                 case CENTER -> {
-                    guiGraphics.pose().translate(drawArea.x + (drawArea.width - lineWidth) / 2f, drawArea.y + yOff, 0);
+                    guiGraphics.pose().translate(drawArea.x + (drawArea.width - lineWidth) / 2f, drawArea.y + yOff, this.getRenderDepth());
                     guiGraphics.pose().scale((float)fontSize / 9f, (float)fontSize / 9f, 1f);
                 }
                 case RIGHT -> {
-                    guiGraphics.pose().translate(drawArea.x + drawArea.width - lineWidth, drawArea.y + yOff, 0);
+                    guiGraphics.pose().translate(drawArea.x + drawArea.width - lineWidth, drawArea.y + yOff, this.getRenderDepth());
                     guiGraphics.pose().scale((float)fontSize / 9f, (float)fontSize / 9f, 1f);
                 }
             }

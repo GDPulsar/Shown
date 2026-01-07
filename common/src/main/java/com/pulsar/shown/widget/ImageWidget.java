@@ -26,6 +26,10 @@ public class ImageWidget extends WidgetBase {
         return (T)this;
     }
 
+    public <T extends ImageWidget> T setImage(ResourceLocation image) {
+        return this.setImage(image, 256, 256);
+    }
+
     public ResourceLocation getImage() {
         return this.image;
     }
@@ -59,7 +63,7 @@ public class ImageWidget extends WidgetBase {
         UIArea drawArea = this.getRenderArea(tickDelta);
         switch (this.scaleType) {
             case STRETCH -> {
-                guiGraphics.blit(this.image, drawArea.x, drawArea.y, drawArea.width, drawArea.height, 0f, 0f, 256, 256, 256, 256);
+                guiGraphics.blit(this.image, drawArea.x, drawArea.y, this.getRenderDepth(), 0f, 0f, drawArea.width, drawArea.height, drawArea.width, drawArea.height);
             }
             case TILE -> {
                 renderTiledTexture(guiGraphics, drawArea, new UIArea(0, 0, (int)imageSize.x, (int)imageSize.y));
@@ -96,9 +100,9 @@ public class ImageWidget extends WidgetBase {
 
     private void renderTexture(GuiGraphics guiGraphics, UIArea drawArea, UIArea subArea) {
         if (this.image == null) return;
-        guiGraphics.blit(this.image, drawArea.x, drawArea.y, drawArea.width, drawArea.height,
-                subArea.x, subArea.y,
+        guiGraphics.blit(this.image, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, this.getRenderDepth(),
                 subArea.width, subArea.height,
+                subArea.x, subArea.y,
                 (int)imageSize.x, (int)imageSize.y
         );
     }
@@ -115,9 +119,9 @@ public class ImageWidget extends WidgetBase {
             for (int y = 0; y < yTotal; y++) {
                 int drawX = drawArea.x + xStep * x;
                 int drawY = drawArea.y + yStep * y;
-                guiGraphics.blit(this.image, drawX, drawY, xStep, yStep,
-                        subArea.x, subArea.y,
+                guiGraphics.blit(this.image, drawX, drawY, drawX + xStep, drawY + yStep, this.getRenderDepth(),
                         subArea.width, subArea.height,
+                        subArea.x, subArea.y,
                         (int)imageSize.x, (int)imageSize.y
                 );
             }
