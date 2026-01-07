@@ -57,13 +57,13 @@ public class ImageWidget extends WidgetBase {
     }
 
     @Override
-    void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
+    void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         if (this.image == null || this.imageSize == null) return;
         RenderSystem.enableBlend();
         UIArea drawArea = this.getRenderArea(tickDelta);
         switch (this.scaleType) {
             case STRETCH -> {
-                guiGraphics.blit(this.image, drawArea.x, drawArea.y, this.getRenderDepth(), 0f, 0f, drawArea.width, drawArea.height, drawArea.width, drawArea.height);
+                Shown.betterBlit(guiGraphics, this.image, drawArea, this.getRenderDepth(), 0f, 0f, 1f, 1f);
             }
             case TILE -> {
                 renderTiledTexture(guiGraphics, drawArea, new UIArea(0, 0, (int)imageSize.x, (int)imageSize.y));
@@ -100,11 +100,9 @@ public class ImageWidget extends WidgetBase {
 
     private void renderTexture(GuiGraphics guiGraphics, UIArea drawArea, UIArea subArea) {
         if (this.image == null) return;
-        guiGraphics.blit(this.image, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, this.getRenderDepth(),
-                subArea.width, subArea.height,
-                subArea.x, subArea.y,
-                (int)imageSize.x, (int)imageSize.y
-        );
+        Shown.betterBlit(guiGraphics, this.image, drawArea, this.getRenderDepth(),
+                subArea.x / imageSize.x, subArea.y / imageSize.y,
+                (subArea.x + subArea.width) / imageSize.x, (subArea.y + subArea.height) / imageSize.y);
     }
 
     private void renderTiledTexture(GuiGraphics guiGraphics, UIArea drawArea, UIArea subArea) {
@@ -119,11 +117,9 @@ public class ImageWidget extends WidgetBase {
             for (int y = 0; y < yTotal; y++) {
                 int drawX = drawArea.x + xStep * x;
                 int drawY = drawArea.y + yStep * y;
-                guiGraphics.blit(this.image, drawX, drawY, drawX + xStep, drawY + yStep, this.getRenderDepth(),
-                        subArea.width, subArea.height,
-                        subArea.x, subArea.y,
-                        (int)imageSize.x, (int)imageSize.y
-                );
+                Shown.betterBlit(guiGraphics, this.image, new UIArea(drawX, drawY, xStep, yStep), this.getRenderDepth(),
+                        subArea.x / imageSize.x, subArea.y / imageSize.y,
+                        (subArea.x + subArea.width) / imageSize.x, (subArea.y + subArea.height) / imageSize.y);
             }
         }
         guiGraphics.disableScissor();

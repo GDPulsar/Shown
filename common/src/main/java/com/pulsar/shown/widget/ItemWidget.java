@@ -1,5 +1,6 @@
 package com.pulsar.shown.widget;
 
+import com.pulsar.shown.Shown;
 import com.pulsar.shown.UIArea;
 import com.pulsar.shown.UIVec;
 import net.minecraft.client.Minecraft;
@@ -24,14 +25,11 @@ public class ItemWidget extends WidgetBase {
     }
 
     @Override
-    void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
+    void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         if (this.item == null) return;
         UIArea drawArea = this.getRenderArea(tickDelta);
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(drawArea.x, drawArea.y, 0);
-        guiGraphics.pose().scale(drawArea.width / 18f, drawArea.height / 18f, 1f);
-        guiGraphics.renderItem(this.item, 0, 0, this.getRenderDepth());
-        guiGraphics.pose().popPose();
+        if (debug) Shown.betterFill(guiGraphics, drawArea, this.getRenderDepth(), 0xFF000000);
+        Shown.betterRenderItem(guiGraphics, getItem(), drawArea, this.getRenderDepth());
         if (this.contains(mouseX, mouseY)) {
             guiGraphics.renderTooltip(Minecraft.getInstance().font, this.item, mouseX, mouseY);
         }

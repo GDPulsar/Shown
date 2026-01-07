@@ -15,10 +15,20 @@ import java.util.List;
 
 public abstract class ShownScreen extends Screen {
     private final WidgetBase root;
+    private final boolean debug;
 
-    public ShownScreen() {
+    public ShownScreen(boolean debug) {
         super(Component.empty());
         this.root = new WidgetBase(new UIVec(0, 0, 0, 0), new UIVec(1, 1, 0, 0));
+        this.debug = debug;
+    }
+
+    public ShownScreen() {
+        this(false);
+    }
+
+    public boolean shouldDebug() {
+        return this.debug;
     }
 
     @Override
@@ -52,18 +62,20 @@ public abstract class ShownScreen extends Screen {
 
     }
 
-    private void addChildWidgets(WidgetBase widget, int depth, List<WidgetBase> parents, List<Triple<WidgetBase, Integer, List<WidgetBase>>> widgetList) {
-        parents.add(widget);
-        List<WidgetBase> children = widget.getChildren();
-        for (int i = 0; i < children.size(); i++) {
-            widgetList.add(Triple.of(children.get(i), depth * 100 + i, List.copyOf(parents)));
-            addChildWidgets(children.get(i), depth + 1, parents, widgetList);
-        }
-        parents.remove(widget);
-    }
-
     float tick = 0f;
     long lastNanos = 0;
+
+    private void renderWidget(WidgetBase widget, GuiGraphics graphics, int mouseX, int mouseY, float tickDelta) {
+        widget.preRender(graphics, mouseX, mouseY, tickDelta, this.debug);
+        widget.render(graphics, mouseX, mouseY, tickDelta, this.debug);
+        widget.postRender(graphics, mouseX, mouseY, tickDelta, this.debug);
+
+        widget.preRenderChild(graphics, mouseX, mouseY, tickDelta);
+        for (WidgetBase child : widget.getChildren()) {
+            renderWidget(child, graphics, mouseX, mouseY, tickDelta);
+        }
+        widget.postRenderChild(graphics, mouseX, mouseY, tickDelta);
+    }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -72,23 +84,7 @@ public abstract class ShownScreen extends Screen {
         float tickDelta = tick - Mth.floor(tick);
         lastNanos = System.nanoTime();
 
-        List<Triple<WidgetBase, Integer, List<WidgetBase>>> widgets = new ArrayList<>();
-        addChildWidgets(this.root, 0, new ArrayList<>(), widgets);
-
-        widgets.sort((a, b) ->
-                (a.getLeft().getZIndex() * 10000 + a.getMiddle()) - (b.getLeft().getZIndex() * 10000 + a.getMiddle())
-        );
-        for (Triple<WidgetBase, Integer, List<WidgetBase>> pair : widgets) {
-            for (WidgetBase parent : pair.getRight()) {
-                parent.preRenderChild(guiGraphics, mouseX, mouseY, tickDelta);
-            }
-            pair.getLeft().preRender(guiGraphics, mouseX, mouseY, tickDelta);
-            pair.getLeft().render(guiGraphics, mouseX, mouseY, tickDelta);
-            pair.getLeft().postRender(guiGraphics, mouseX, mouseY, tickDelta);
-            for (WidgetBase parent : pair.getRight()) {
-                parent.postRenderChild(guiGraphics, mouseX, mouseY, tickDelta);
-            }
-        }
+        renderWidget(this.root, guiGraphics, mouseX, mouseY, tickDelta);
     }
 
     @Override

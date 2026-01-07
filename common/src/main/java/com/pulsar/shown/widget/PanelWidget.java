@@ -1,5 +1,6 @@
 package com.pulsar.shown.widget;
 
+import com.pulsar.shown.Shown;
 import com.pulsar.shown.UIArea;
 import com.pulsar.shown.UIVec;
 import net.minecraft.client.gui.GuiGraphics;
@@ -53,17 +54,13 @@ public class PanelWidget extends WidgetBase {
     }
 
     @Override
-    void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
+    void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         UIArea drawArea = this.getRenderArea(tickDelta);
-        int aX = drawArea.x;
-        int aY = drawArea.y;
-        int bX = drawArea.x + drawArea.width;
-        int bY = drawArea.y + drawArea.height;
         if (borderThickness > 0) {
-            guiGraphics.fill(aX, aY, bX, bY, this.getRenderDepth(), borderColor);
-            guiGraphics.fill(aX + borderThickness, aY + borderThickness, bX - borderThickness, bY - borderThickness, this.getRenderDepth(), backgroundColor);
+            Shown.betterFill(guiGraphics, drawArea, this.getRenderDepth(), borderColor);
+            Shown.betterFill(guiGraphics, drawArea.shrink(borderThickness), this.getRenderDepth(), backgroundColor);
         } else {
-            guiGraphics.fill(aX, aY, bX, bY, this.getRenderDepth(), backgroundColor);
+            Shown.betterFill(guiGraphics, drawArea, this.getRenderDepth(), backgroundColor);
         }
     }
 }

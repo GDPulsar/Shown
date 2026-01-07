@@ -1,6 +1,7 @@
 package com.pulsar.shown.widget;
 
 import com.pulsar.shown.Enums;
+import com.pulsar.shown.Shown;
 import com.pulsar.shown.UIArea;
 import com.pulsar.shown.UIVec;
 import net.minecraft.client.Minecraft;
@@ -8,6 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -49,7 +51,7 @@ public class TextWidget extends WidgetBase {
     }
 
     @Override
-    void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
+    void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         UIArea drawArea = this.getRenderArea(tickDelta);
         List<FormattedCharSequence> wrapped = Minecraft.getInstance().font.split(this.text, drawArea.width);
         double yOff = 0;
@@ -76,6 +78,7 @@ public class TextWidget extends WidgetBase {
                     guiGraphics.pose().scale((float)fontSize / 9f, (float)fontSize / 9f, 1f);
                 }
             }
+            if (debug) Shown.betterFill(guiGraphics, new UIArea(0, 0, lineWidth, Mth.ceil(fontSize)), this.getRenderDepth(), 0xFF000000);
             guiGraphics.drawString(Minecraft.getInstance().font, line, 0, 0, 0xFFFFFFFF, false);
             guiGraphics.pose().popPose();
             yOff += fontSize;

@@ -27,18 +27,14 @@ public class ButtonWidget extends PanelWidget {
     }
 
     @Override
-    void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
+    void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         UIArea drawArea = this.getRenderArea(tickDelta);
-        int aX = drawArea.x;
-        int aY = drawArea.y;
-        int bX = drawArea.x + drawArea.width;
-        int bY = drawArea.y + drawArea.height;
         int drawColor = hoverColor != -1 && this.contains(mouseX, mouseY) ? hoverColor : backgroundColor;
         if (borderThickness > 0) {
-            guiGraphics.fill(aX, aY, bX, bY, this.getRenderDepth(), borderColor);
-            guiGraphics.fill(aX + borderThickness, aY + borderThickness, bX - borderThickness, bY - borderThickness, this.getRenderDepth(), drawColor);
+            Shown.betterFill(guiGraphics, drawArea, this.getRenderDepth(), borderColor);
+            Shown.betterFill(guiGraphics, drawArea.shrink(borderThickness), this.getRenderDepth(), drawColor);
         } else {
-            guiGraphics.fill(aX, aY, bX, bY, this.getRenderDepth(), drawColor);
+            Shown.betterFill(guiGraphics, drawArea, this.getRenderDepth(), drawColor);
         }
     }
 

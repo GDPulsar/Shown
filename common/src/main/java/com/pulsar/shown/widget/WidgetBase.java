@@ -285,23 +285,23 @@ public class WidgetBase {
         return getDepth(current.getParent(), depth + 1);
     }
 
-    int getRenderDepth() {
+    float getRenderDepth() {
         return getZIndex() * 10000 + getDepth(this, 0) + this.getParent().getChildren().indexOf(this);
     }
 
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         if (!isVisible()) return;
-        renderBackground(guiGraphics, mouseX, mouseY, tickDelta);
-        renderContent(guiGraphics, mouseX, mouseY, tickDelta);
-        renderOverlay(guiGraphics, mouseX, mouseY, tickDelta);
+        renderBackground(guiGraphics, mouseX, mouseY, tickDelta, debug);
+        renderContent(guiGraphics, mouseX, mouseY, tickDelta, debug);
+        renderOverlay(guiGraphics, mouseX, mouseY, tickDelta, debug);
     }
 
-    void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {}
-    void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {}
-    void renderOverlay(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {}
+    void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {}
+    void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {}
+    void renderOverlay(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {}
 
-    public void preRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {}
-    public void postRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {}
+    public void preRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {}
+    public void postRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {}
     public void preRenderChild(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {}
     public void postRenderChild(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {}
 }

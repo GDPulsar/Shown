@@ -1,5 +1,6 @@
 package com.pulsar.shown.widget;
 
+import com.pulsar.shown.Shown;
 import com.pulsar.shown.UIArea;
 import com.pulsar.shown.UIVec;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,20 +28,27 @@ public class ToggleButtonWidget extends ButtonWidget {
     }
 
     @Override
-    void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean childClicked = super.mouseClicked(mouseX, mouseY, button);
+        if (childClicked) return true;
+        if (this.contains(mouseX, mouseY)) {
+            this.pressed = !this.pressed;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         UIArea drawArea = this.getRenderArea(tickDelta);
-        int aX = drawArea.x;
-        int aY = drawArea.y;
-        int bX = drawArea.x + drawArea.width;
-        int bY = drawArea.y + drawArea.height;
         int drawColor = backgroundColor;
         if (this.isPressed()) drawColor = this.getToggledColor();
         if (this.getHoverColor() != -1 && this.contains(mouseX, mouseY)) drawColor = this.getHoverColor();
         if (borderThickness > 0) {
-            guiGraphics.fill(aX, aY, bX, bY, this.getRenderDepth(), borderColor);
-            guiGraphics.fill(aX + borderThickness, aY + borderThickness, bX - borderThickness, bY - borderThickness, this.getRenderDepth(), drawColor);
+            Shown.betterFill(guiGraphics, drawArea, this.getRenderDepth(), borderColor);
+            Shown.betterFill(guiGraphics, drawArea.shrink(2), this.getRenderDepth(), drawColor);
         } else {
-            guiGraphics.fill(aX, aY, bX, bY, this.getRenderDepth(), drawColor);
+            Shown.betterFill(guiGraphics, drawArea, this.getRenderDepth(), drawColor);
         }
     }
 }

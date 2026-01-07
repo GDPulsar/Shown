@@ -11,8 +11,8 @@ public class UIArea {
     public UIArea(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = Math.max(0, width);
+        this.height = Math.max(0, height);
     }
 
     public UIArea getSubArea(UIVec pos, UIVec size, Vec2 anchorPoint) {
@@ -23,6 +23,10 @@ public class UIArea {
         int posX = anchorX - (int)(sizeX * anchorPoint.x);
         int posY = anchorY - (int)(sizeY * anchorPoint.y);
         return new UIArea(posX, posY, sizeX, sizeY);
+    }
+
+    public UIArea shrink(int amount) {
+        return new UIArea(this.x + amount, this.y + amount, this.width - amount * 2, this.height - amount * 2);
     }
 
     public UIArea lerp(UIArea other, float delta) {
