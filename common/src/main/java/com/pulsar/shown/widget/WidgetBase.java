@@ -286,7 +286,7 @@ public class WidgetBase {
     }
 
     float getRenderDepth() {
-        return getZIndex() * 10000 + getDepth(this, 0) + this.getParent().getChildren().indexOf(this);
+        return getZIndex() * 0.1f + getDepth(this, 0) * 0.001f + this.getParent().getChildren().indexOf(this) * 0.00001f;
     }
 
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
