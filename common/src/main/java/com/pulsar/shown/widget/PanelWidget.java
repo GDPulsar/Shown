@@ -60,10 +60,10 @@ public class PanelWidget extends WidgetBase {
         int bX = drawArea.x + drawArea.width;
         int bY = drawArea.y + drawArea.height;
         if (borderThickness > 0) {
-            guiGraphics.fill(aX, aY, bX, bY, borderColor);
+            guiGraphics.fill(aX, aY, bX, bY, this.getRenderDepth(), borderColor);
             guiGraphics.fill(aX + borderThickness, aY + borderThickness, bX - borderThickness, bY - borderThickness, this.getRenderDepth(), backgroundColor);
         } else {
-            guiGraphics.fill(aX, aY, bX, bY, backgroundColor);
+            guiGraphics.fill(aX, aY, bX, bY, this.getRenderDepth(), backgroundColor);
         }
     }
 }
