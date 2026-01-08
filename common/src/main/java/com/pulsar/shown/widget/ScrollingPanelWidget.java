@@ -6,6 +6,7 @@ import com.pulsar.shown.UIVec;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 public class ScrollingPanelWidget extends PanelWidget {
     private double scrollX = 0;
@@ -129,13 +130,7 @@ public class ScrollingPanelWidget extends PanelWidget {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dx, double dy) {
         if (allowDragging && startedDrag && button == dragButton.button()) {
-            this.scrollX += dx;
-            this.scrollY += dy;
-            recalculateScrollLimits();
-            if (this.scrollLimits != null) {
-                this.scrollX = Mth.clamp(this.scrollX, this.scrollLimits.x, this.scrollLimits.x + this.scrollLimits.width);
-                this.scrollY = Mth.clamp(this.scrollY, this.scrollLimits.y, this.scrollLimits.y + this.scrollLimits.height);
-            }
+            doScroll(dx, dy);
             return true;
         }
         return false;
@@ -144,23 +139,29 @@ public class ScrollingPanelWidget extends PanelWidget {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (allowMouseWheel) {
-            this.scrollX += scrollX * scrollSensitivity;
-            this.scrollY += scrollY * scrollSensitivity;
-            recalculateScrollLimits();
-            if (this.scrollLimits != null) {
-                this.scrollX = Mth.clamp(this.scrollX, this.scrollLimits.x, this.scrollLimits.x + this.scrollLimits.width);
-                this.scrollY = Mth.clamp(this.scrollY, this.scrollLimits.y, this.scrollLimits.y + this.scrollLimits.height);
-            }
+            doScroll(scrollX * scrollSensitivity, scrollY * scrollSensitivity);
             return true;
         }
         return false;
+    }
+
+    private void doScroll(double dx, double dy) {
+        this.scrollX += dx;
+        this.scrollY += dy;
+        recalculateScrollLimits();
+        if (this.scrollLimits != null) {
+            this.scrollX = Mth.clamp(this.scrollX, this.scrollLimits.x, this.scrollLimits.x + this.scrollLimits.width);
+            this.scrollY = Mth.clamp(this.scrollY, this.scrollLimits.y, this.scrollLimits.y + this.scrollLimits.height);
+        }
+        for (WidgetBase child : this.getChildren()) {
+            child.setOffset(new Vector2i((int)this.scrollX, (int)this.scrollY));
+        }
     }
 
     @Override
     public void preRenderChild(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
         UIArea area = this.getArea();
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(this.scrollX, this.scrollY, 0);
         guiGraphics.enableScissor(area.x, area.y, area.x + area.width, area.y + area.height);
     }
 

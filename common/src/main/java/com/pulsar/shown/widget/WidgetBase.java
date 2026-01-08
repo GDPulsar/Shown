@@ -6,6 +6,7 @@ import com.pulsar.shown.constraint.WidgetConstraint;
 import com.pulsar.shown.layout.WidgetLayout;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.phys.Vec2;
+import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,8 @@ public class WidgetBase {
     UIVec position;
     float rotation = 0f;
     UIVec size;
+
+    Vector2i offset;
 
     Vec2 anchorPoint = new Vec2(0f, 0f);
     int zIndex = 0;
@@ -76,6 +79,17 @@ public class WidgetBase {
     }
     public UIVec getSize() {
         return this.size;
+    }
+
+    public <T extends WidgetBase> T setOffset(Vector2i offset) {
+        this.offset = offset;
+        if (this.initialized) {
+            this.updateArea();
+        }
+        return (T)this;
+    }
+    public Vector2i getOffset() {
+        return this.offset;
     }
 
     public <T extends WidgetBase> T setParent(WidgetBase parent) {
@@ -189,7 +203,8 @@ public class WidgetBase {
     public void updateArea(UIArea parentArea) {
         this.lastArea = uiArea;
         this.areaChanged = true;
-        this.uiArea = parentArea.getSubArea(this.position, this.size, this.anchorPoint);
+        UIVec offsetPos = new UIVec(this.position.scaleX, this.position.scaleY, this.position.offsetX + offset.x, this.position.offsetY + offset.y);
+        this.uiArea = parentArea.getSubArea(offsetPos, this.size, this.anchorPoint);
         if (this.constraint != null) this.constraint.update();
         for (WidgetBase child : this.children) {
             child.updateArea();
