@@ -1,6 +1,7 @@
 package com.pulsar.shown.widget;
 
 import com.pulsar.shown.Enums;
+import com.pulsar.shown.Shown;
 import com.pulsar.shown.UIArea;
 import com.pulsar.shown.UIVec;
 import net.minecraft.client.gui.GuiGraphics;
@@ -93,17 +94,18 @@ public class ScrollingPanelWidget extends PanelWidget {
     private void recalculateScrollLimits() {
         if (!this.autoScrollLimits) return;
         UIArea area = this.getArea();
-        int minX = 0;
-        int minY = 0;
-        int maxX = 0;
-        int maxY = 0;
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
         for (WidgetBase child : this.getChildren()) {
-            minX = Math.min(minX, child.getArea().x);
-            minY = Math.min(minY, child.getArea().y);
-            maxX = Math.max(maxX, child.getArea().x + child.getArea().width - area.width);
-            maxY = Math.max(maxY, child.getArea().y + child.getArea().height - area.height);
+            UIArea subArea = child.getBaseArea();
+            minX = Math.min(minX, subArea.x - area.x - scrollPadding.x);
+            minY = Math.min(minY, subArea.y - area.y - scrollPadding.y);
+            maxX = Math.max(maxX, subArea.x - area.x + subArea.width - area.width + (borderThickness * 2) + scrollPadding.x);
+            maxY = Math.max(maxY, subArea.y - area.y + subArea.height - area.height + (borderThickness * 2) + scrollPadding.y);
         }
-        this.scrollLimits = new UIArea(minX, minY, maxX - minX, maxY - minY);
+        this.scrollLimits = new UIArea(Math.min(0, minX), Math.min(0, minY), maxX - Math.min(0, minX), maxY - Math.min(0, minY));
     }
 
     private boolean startedDrag = false;
@@ -112,7 +114,7 @@ public class ScrollingPanelWidget extends PanelWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean childClicked = super.mouseClicked(mouseX, mouseY, button);
         if (childClicked) return true;
-        if (this.contains(mouseX, mouseY) && button == dragButton.button()) {
+        if (this.contains(mouseX, mouseY) && button == dragButton.button() && allowDragging) {
             startedDrag = true;
             return true;
         }
@@ -133,12 +135,14 @@ public class ScrollingPanelWidget extends PanelWidget {
             doScroll(dx, dy);
             return true;
         }
-        return false;
+        return super.mouseDragged(mouseX, mouseY, button, dx, dy);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (allowMouseWheel) {
+        boolean childScrolled = super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        if (childScrolled) return true;
+        if (allowMouseWheel && this.contains(mouseX, mouseY)) {
             doScroll(scrollX * scrollSensitivity, scrollY * scrollSensitivity);
             return true;
         }
@@ -146,15 +150,15 @@ public class ScrollingPanelWidget extends PanelWidget {
     }
 
     private void doScroll(double dx, double dy) {
-        this.scrollX += dx;
-        this.scrollY += dy;
+        this.scrollX -= dx;
+        this.scrollY -= dy;
         recalculateScrollLimits();
         if (this.scrollLimits != null) {
             this.scrollX = Mth.clamp(this.scrollX, this.scrollLimits.x, this.scrollLimits.x + this.scrollLimits.width);
             this.scrollY = Mth.clamp(this.scrollY, this.scrollLimits.y, this.scrollLimits.y + this.scrollLimits.height);
         }
         for (WidgetBase child : this.getChildren()) {
-            child.setOffset(new Vector2i((int)this.scrollX, (int)this.scrollY));
+            child.setOffset(new Vector2i(-(int)this.scrollX, -(int)this.scrollY));
         }
     }
 
@@ -162,7 +166,8 @@ public class ScrollingPanelWidget extends PanelWidget {
     public void preRenderChild(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
         UIArea area = this.getArea();
         guiGraphics.pose().pushPose();
-        guiGraphics.enableScissor(area.x, area.y, area.x + area.width, area.y + area.height);
+        guiGraphics.enableScissor(area.x + borderThickness, area.y + borderThickness,
+                area.x + area.width - borderThickness, area.y + area.height - borderThickness);
     }
 
     @Override

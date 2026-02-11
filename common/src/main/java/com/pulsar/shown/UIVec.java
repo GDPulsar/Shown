@@ -12,4 +12,12 @@ public class UIVec {
         this.offsetX = offsetX;
         this.offsetY = offsetY;
     }
+
+    public static UIVec scaled(double scaleX, double scaleY) {
+        return new UIVec(scaleX, scaleY, 0, 0);
+    }
+
+    public static UIVec offset(int offsetX, int offsetY) {
+        return new UIVec(0, 0, offsetX, offsetY);
+    }
 }

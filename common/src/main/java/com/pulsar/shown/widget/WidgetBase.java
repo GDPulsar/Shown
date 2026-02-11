@@ -1,5 +1,6 @@
 package com.pulsar.shown.widget;
 
+import com.pulsar.shown.Shown;
 import com.pulsar.shown.UIArea;
 import com.pulsar.shown.UIVec;
 import com.pulsar.shown.constraint.WidgetConstraint;
@@ -18,7 +19,7 @@ public class WidgetBase {
     float rotation = 0f;
     UIVec size;
 
-    Vector2i offset;
+    Vector2i offset = new Vector2i(0, 0);
 
     Vec2 anchorPoint = new Vec2(0f, 0f);
     int zIndex = 0;
@@ -34,6 +35,7 @@ public class WidgetBase {
 
     UIArea lastArea;
     UIArea uiArea;
+    UIArea baseArea;
     boolean areaChanged = false;
 
     List<WidgetBase> children = new ArrayList<>();
@@ -189,6 +191,10 @@ public class WidgetBase {
         return this.uiArea;
     }
 
+    public UIArea getBaseArea() {
+        return this.baseArea;
+    }
+
     public UIArea getRenderArea(float tickDelta) {
         if (shouldLerp && this.lastArea != null) {
             return this.lastArea.lerp(this.uiArea, tickDelta);
@@ -205,6 +211,7 @@ public class WidgetBase {
         this.areaChanged = true;
         UIVec offsetPos = new UIVec(this.position.scaleX, this.position.scaleY, this.position.offsetX + offset.x, this.position.offsetY + offset.y);
         this.uiArea = parentArea.getSubArea(offsetPos, this.size, this.anchorPoint);
+        this.baseArea = parentArea.getSubArea(this.position, this.size, this.anchorPoint);
         if (this.constraint != null) this.constraint.update();
         for (WidgetBase child : this.children) {
             child.updateArea();

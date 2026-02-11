@@ -34,6 +34,7 @@ public final class Shown {
         vertexConsumer.addVertex(matrix4f, area.x, area.y + area.height, depth).setColor(color);
         vertexConsumer.addVertex(matrix4f, area.x + area.width, area.y + area.height, depth).setColor(color);
         vertexConsumer.addVertex(matrix4f, area.x + area.width, area.y, depth).setColor(color);
+        graphics.flush();
     }
 
     public static void betterRenderItem(GuiGraphics graphics, ItemStack stack, UIArea drawArea, float depth) {
